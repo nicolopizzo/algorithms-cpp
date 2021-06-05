@@ -15,6 +15,8 @@ struct edge {
         v = y;
         w = z;
     }
+
+    edge(){}
 };
 
 class WGraph {
@@ -26,7 +28,8 @@ class WGraph {
         WGraph(int n);
         void insertEdge(int u, int v, int w);
         vector<edge*> neighbours(int u);
-        
+
+        vector<edge*> mstKruskal();        
 };
 
 #include "WGraph.cpp"
