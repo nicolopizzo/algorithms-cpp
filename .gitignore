@@ -1,2 +1,4 @@
 main.cpp
 *.out
+main
+.vscode/**
