@@ -1,31 +1,36 @@
 #include "PriorityQueue.h"
 #include <limits>
 
+// L'array qp mantiene l'indice del vertice i su pq
+// Dunque, qp[v] = i indica che nell'array pq, il vertice v
+// si trova nella i-esima posizione
 PriorityQueue::PriorityQueue(int n) {
     num = 0;
     pq = new int[n+1];
     qp = new int[n];
-    keys = new float[n+1];
-    for (int i = 0; i < n+1; i++) {
+
+    // Set the initial distance to infinity
+    keys = new float[n];
+    for (int i = 0; i < n; i++) {
         keys[i] = std::numeric_limits<float>::infinity();
     }
 }
 
-void PriorityQueue::insert(int i, float key) {
+void PriorityQueue::insert(int v, float key) {
     num++;
-    qp[i] = num;
-    pq[num] = i;
-    keys[i] = key;
+    qp[v] = num;
+    pq[num] = v;
+    keys[v] = key;
 
     bubbleUp(num);
 }
 
-void PriorityQueue::decreaseKey(int i, float key) {
-    if (keys[i] > key) {
-        keys[i] = key;
+void PriorityQueue::decreaseKey(int v, float key) {
+    if (keys[v] > key) {
+        keys[v] = key;
     }
 
-    bubbleUp(qp[i]);
+    bubbleUp(qp[v]);
 }
 
 int PriorityQueue::min() {
@@ -35,7 +40,7 @@ int PriorityQueue::min() {
 int PriorityQueue::deleteMin() {
     int v = pq[1];
     pq[1] = pq[num];
-    keys[1] = keys[num];
+    qp[v] = 0;
     num--;
 
     // Ripristino l'heap order della PQ
@@ -45,14 +50,7 @@ int PriorityQueue::deleteMin() {
 }
 
 bool PriorityQueue::contains(int w) {
-    // Check lineare
-    for (int i = 0; i < num; i++) {
-        if (pq[i] == w) {
-            return true;
-        }
-    }
-
-    return false;
+    return qp[w];
 }
 
 bool PriorityQueue::isEmpty() {
@@ -65,13 +63,6 @@ void swap(int& a, int& b) {
     a = a^b;
 }
 
-void swapFloat(float& a, float& b) {
-    float tmp = a;
-    a = b;
-    b = tmp;
-}
-
-// Definire le operazioni di bubbleUp e bubbleDown
 void PriorityQueue::bubbleUp(int i) {
     if (i <= 1) {
         return ;
@@ -79,10 +70,9 @@ void PriorityQueue::bubbleUp(int i) {
 
     int child = pq[i];
     int father = pq[i/2];
-    if (keys[i] < keys[i/2]) {
+    if (keys[father] > keys[child]) {
         swap(pq[i/2], pq[i]);
-        swapFloat(keys[i], keys[i/2]);
-        // swap(qp[i/2], qp[i]);
+        swap(qp[father], qp[child]);
 
         bubbleUp(i/2);
     }
@@ -93,19 +83,21 @@ void PriorityQueue::bubbleDown(int i) {
         return ;
     }
 
+    int father = pq[i];
+
     int k = i*2;
-    int c1 = pq[k];
+    int child = pq[k];
     int c2 = pq[k+1];
 
     // Take min of the keys
-    if (k+1 <= num && keys[k+1] < keys[k]) {
+    if (k+1 <= num && keys[c2] < keys[child]) {
+        child = c2;
         k++;
     }
 
-    if (keys[i] > keys[k]) {
+    if (keys[father] > keys[child]) {
         swap(pq[i], pq[k]);
-        swapFloat(keys[i], keys[k]);
-        // swap(qp[i], qp[k]);
+        swap(qp[father], qp[child]);
 
         bubbleDown(k);
     }
