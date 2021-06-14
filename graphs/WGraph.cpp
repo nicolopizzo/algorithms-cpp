@@ -1,8 +1,11 @@
 #include <algorithm>
 #include "WGraph.h"
 #include "../base/UnionFind.h"
+#include "PriorityQueue.h"
+#include <limits>
 
 using std::sort;
+using namespace std;
 
 WGraph::WGraph(int n) {
     V = n;
@@ -67,4 +70,51 @@ vector<edge*> WGraph::mstKruskal() {
     }
 
     return res;
+}
+
+vector<edge*> WGraph::mstPrim(int s) {
+    float distTo[V];
+    edge* edgeTo[V];
+    bool marked[V];
+    vector<edge*> mst;
+
+    for (int i = 0; i < V; i++) {
+        distTo[i] = numeric_limits<float>::infinity();
+        edgeTo[i] = nullptr;
+        marked[i] = false;
+    }
+    
+    PriorityQueue pq = PriorityQueue(V);
+    distTo[s] = s;
+
+    pq.insert(s, distTo[s]);
+
+    while(!pq.isEmpty()) {
+        int v = pq.deleteMin();
+        marked[v] = true;
+        if (edgeTo[v]) {
+            mst.push_back(edgeTo[v]);
+        }
+
+        for (edge* e : adjList[v]) {
+            int w = v == e->v ? e->u : e->v;
+
+            if (marked[w]) {
+                continue;
+            }
+
+            if (e->w < distTo[w]) {
+                distTo[w] = e->w;
+                edgeTo[w] = e;
+                if (pq.contains(w)) {
+                    pq.decreaseKey(w, distTo[w]);
+                }
+                else {
+                    pq.insert(w, distTo[w]);
+                }
+            }
+        }
+    }
+
+    return mst;
 }

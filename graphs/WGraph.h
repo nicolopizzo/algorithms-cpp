@@ -29,7 +29,8 @@ class WGraph {
         void insertEdge(int u, int v, int w);
         vector<edge*> neighbours(int u);
 
-        vector<edge*> mstKruskal();        
+        vector<edge*> mstKruskal();
+        vector<edge*> mstPrim(int s);
 };
 
 #include "WGraph.cpp"

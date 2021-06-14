@@ -1,5 +1,5 @@
 #include "Graph.h"
-#include "base/Queue.h"
+#include "../base/Queue.h"
 #include <iostream>
 
 using namespace std;
